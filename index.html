@@ -380,24 +380,59 @@ function renderTable(){if(!S.cfg){$('#tbl').innerHTML='<tr><td>Enregistre ton pl
 
 function render(){
  renderDash();renderTable();renderEnc();
- var c=S.cfg, has=!!c;
- ['#today','#enc','#phase','#stats','#chartbox'].forEach(function(s){$(s).hidden=!has});
- if(has){
+var c=S.cfg, has=!!c;
+
+['#enc','#phase','#stats','#chartbox'].forEach(function(s){
+  $(s).hidden=!has;
+});
+
+$('#today').hidden=false;
+
+if(has){
   var t=dk(),n=dd(c.start,t)+1,a=allow(t),s=S.log[t]||0;
-  $('#smoked').textContent=s;$('#allow').textContent=a;
+  $('#smoked').textContent=s;
+  $('#allow').textContent=a;
   $('#today').className='card hero'+(s>a?' over':'');
+
   var left=c.quit?dd(t,c.quit):0;
   $('#dayinfo').textContent='Jour '+n+(c.phase==='arret'?(left>0?" · phase d'arrêt · zéro dans "+left+' jour'+(left>1?'s':''):' · objectif zéro atteint'):" · phase d'observation");
+
   var iv=ivMin(t),msg;
-  if(a===0)msg='Objectif du jour : zéro cigarette.';
-  else{msg=(c.phase==='arret'?'Intervalle conseillé : ':'Ton intervalle habituel : ')+fmtMin(iv);
-   if(S.last){var w=Math.ceil((S.last+iv*6e4-Date.now())/6e4);msg+=w>0?' · prochaine dans '+fmtMin(w):' · prochaine possible maintenant'}}
-  $('#next').textContent=msg;ringTick();renderPhase();paintHero(s,a);
+
+  if(a===0){
+    msg='Objectif du jour : zéro cigarette.';
+  } else {
+    msg=(c.phase==='arret'?'Intervalle conseillé : ':'Ton intervalle habituel : ')+fmtMin(iv);
+
+    if(S.last){
+      var w=Math.ceil((S.last+iv*6e4-Date.now())/6e4);
+      msg+=w>0?' · prochaine dans '+fmtMin(w):' · prochaine possible maintenant';
+    }
+  }
+
+  $('#next').textContent=msg;
+  ringTick();
+  renderPhase();
+  paintHero(s,a);
   $('#avoided').textContent=avoidedTotal();
   $('#money').textContent=(avoidedTotal()*c.price/c.pack).toFixed(2)+' $';
-  if(!render.coin){render.coin=1;coins()}
+
+  if(!render.coin){
+    render.coin=1;
+    coins();
+  }
+
   drawChart();
- }
+} else {
+  $('#dayinfo').textContent='Aucun plan enregistré';
+  $('#smoked').textContent='0';
+  $('#allow').textContent='—';
+  $('#rl').textContent='';
+  $('#air').textContent='🌤️ Air pur du jour : 100 %';
+  $('#next').textContent='Enregistre ton plan pour suivre tes cigarettes.';
+  $('#rp').style.strokeDashoffset='326.73';
+  $('#today').className='card hero clear';
+}
  }
 function renderLists(){
  var c=S.cfg;if(c){$('#perDay').value=c.perDay;$('#price').value=c.price;$('#pack').value=c.pack}
