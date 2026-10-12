@@ -279,7 +279,21 @@ function dd(a,b){return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/8
 function toast(t){var m=$('#msg');m.textContent=t;m.className='on';clearTimeout(toast.t);toast.t=setTimeout(function(){m.className=''},2600)}
 
 function allow(day){var c=S.cfg;if(c.phase!=='arret'||!c.quit||!c.arretStart||day<c.arretStart)return c.perDay;if(day>=c.quit)return 0;var tot=dd(c.arretStart,c.quit),k=dd(c.arretStart,day);return Math.max(0,Math.round(c.perDay*(1-(k+1)/(tot+1))))}
-function days(){var a=[],c=S.cfg,t=dk(),n=dd(c.start,t);for(var i=0;i<=n;i++){var d=new Date(c.start+'T00:00');d.setDate(d.getDate()+i);a.push(dk(d))}return a}
+function days(){
+  var a=[],c=S.cfg;
+
+  if(!c || !c.start) return a;
+
+  var t=dk(),n=dd(c.start,t);
+
+  for(var i=0;i<=n;i++){
+    var d=new Date(c.start+'T00:00');
+    d.setDate(d.getDate()+i);
+    a.push(dk(d));
+  }
+
+  return a;
+}
 function avoidedTotal(){var c=S.cfg,t=dk(),sum=0;days().forEach(function(d){var s=S.log[d]||0;
  if(d===t){var h=new Date().getHours()+new Date().getMinutes()/60,f=Math.min(1,Math.max(0,(h-7)/16));sum+=Math.max(0,Math.round(c.perDay*f)-s)}
  else sum+=Math.max(0,c.perDay-s)});return sum}
@@ -397,8 +411,11 @@ function renderLists(){
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
 function colors(){var cs=getComputedStyle(document.documentElement);return{ink:cs.getPropertyValue('--ink').trim(),c1:cs.getPropertyValue('--c1').trim(),c2:cs.getPropertyValue('--c2').trim(),line:cs.getPropertyValue('--line').trim()}}
-function drawChart(){if(typeof Chart==='undefined')return;
- var ds=days().slice(-14),k=colors(),L=ds,A=ds.map(function(d){return S.log[d]||0}),B=ds.map(avoidedDay);
+function drawChart(){
+  if(typeof Chart==='undefined') return;
+  if(!S.cfg || !S.cfg.start) return;
+
+  var ds=days().slice(-14),k=colors(),L=ds,A=ds.map(function(d){return S.log[d]||0}),B=ds.map(avoidedDay);
  if(chart)chart.destroy();
  chart=new Chart($('#chart'),{type:'line',data:{labels:L,datasets:[
   {label:'Évitées',data:B,borderColor:'#E3A21A',backgroundColor:'rgba(246,207,114,.28)',borderWidth:3,tension:.35,pointRadius:4,pointBackgroundColor:'#E3A21A',fill:true},
