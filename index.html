@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Zéro braise</title>
+<title>Respire 100%</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700&family=Fraunces:opsz,wght@9..144,400;600&display=swap" rel="stylesheet">
 <style>
@@ -130,7 +130,7 @@ details.flash{animation:flash 1.8s ease}
 </style>
 </head>
 <body>
-<header><h1>🔥 Zéro braise</h1><button class="btn ghost" id="theme" aria-label="Changer de thème">Clair / sombre</button></header>
+<header><h1>🔥 Respire 100%</h1><button class="btn ghost" id="theme" aria-label="Changer de thème">Clair / sombre</button></header>
 <main>
 
 <section class="card hero" id="today" hidden>
@@ -494,7 +494,7 @@ $('#csv').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton pla
  if(!window.claude){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='zero-braise.csv';document.body.appendChild(a);a.click();a.remove();return}
  o.style.display='block';o.value=csv();o.select();toast('Copie ce texte dans un fichier .csv')};
 $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton plan.');return}
- var t='J\'ai évité '+avoidedTotal()+' cigarettes et économisé '+(avoidedTotal()*S.cfg.price/S.cfg.pack).toFixed(2)+' $ avec Zéro braise.'+(S.cfg.quit&&S.cfg.phase==='arret'?' Objectif : zéro le '+S.cfg.quit+'.':'');
+ var t='J\'ai évité '+avoidedTotal()+' cigarettes et économisé '+(avoidedTotal()*S.cfg.price/S.cfg.pack).toFixed(2)+' $ avec Respire 100%.'+(S.cfg.quit&&S.cfg.phase==='arret'?' Objectif : zéro le '+S.cfg.quit+'.':'');
  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Message copié')}
  catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
 
