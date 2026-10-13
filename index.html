@@ -479,11 +479,11 @@ $('#theme').onclick=function(){var cur=S.theme||(matchMedia('(prefers-color-sche
 function applyTheme(){if(S.theme)document.documentElement.setAttribute('data-theme',S.theme)}
 
 /* Respiration */
-var br=null,PH=[['Inspire',4,1],['Retiens',4,1],['Expire',6,.55]];
+var br=null,RESP=[['Inspire',4,1],['Retiens',4,1],['Expire',6,.55]];
 $('#brbtn').onclick=function(){
  if(br){clearTimeout(br);br=null;$('#breath').classList.remove('on','hold');$('#brbtn').textContent='🌬️ Commencer';$('#ph').textContent='Prêt ?';$('#orb').style.transform='';return}
  $('#breath').classList.add('on');$('#brbtn').textContent='⏹️ Arrêter';var i=0;
- (function step(){var p=PH[i%3],o=$('#orb');$('#breath').classList.toggle('hold',p[0]==='Retiens');o.style.transition='transform '+(p[0]==='Retiens'?0.3:p[1])+'s ease-in-out';o.style.transform='scale('+p[2]+')';
+ (function step(){var p=RESP[i%3],o=$('#orb');$('#breath').classList.toggle('hold',p[0]==='Retiens');o.style.transition='transform '+(p[0]==='Retiens'?0.3:p[1])+'s ease-in-out';o.style.transform='scale('+p[2]+')';
   $('#ph').textContent=p[0]+' · '+p[1]+' s';i++;br=setTimeout(step,p[1]*1000)})()};
 
 /* Export & partage */
