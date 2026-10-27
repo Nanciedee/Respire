@@ -607,7 +607,628 @@ function clean(o){var D=/^\d{4}-\d{2}-\d{2}$/,r={log:{},ev:{},m:{},tr:[],rem:(+o
  r.cv={};Object.keys(o.cv||{}).forEach(function(k){if(D.test(k))r.cv[k]=Math.max(0,Math.round(+o.cv[k]||0))});
  r.tr=(Array.isArray(o.tr)?o.tr:[]).slice(0,40).map(function(x){return{n:String(x.n||'').slice(0,60),r:String(x.r||'').slice(0,600)}}).filter(function(x){return x.n});
  if(!r.tr.length)r.tr=DEF.slice();return r}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Respire 100%</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700&family=Fraunces:opsz,wght@9..144,400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0E1B66;--grad:linear-gradient(135deg,#050C3A 0%,#0E1B66 35%,#172B8E 65%,#08114A 100%);--card:#FBF1E6;--field:#FFF9F3;--ink:#24140F;--mut:#7A5546;--c1:#E9533B;--c2:#F5A03A;--c3:#FFD98A;--line:#E9D3BC;--bd:#0E1B66;--gold:#C9A24A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050B30;--grad:linear-gradient(135deg,#02061F 0%,#060C33 35%,#0B1650 65%,#030822 100%);--card:#141F5E;--field:#0F1950;--ink:#FFEDE2;--mut:#E8BBA6;--line:#2F418C;--bd:#4A66D6;--gold:#E3C16F}}
+:root[data-theme="dark"]{--bg:#050B30;--grad:linear-gradient(135deg,#02061F 0%,#060C33 35%,#0B1650 65%,#030822 100%);--card:#141F5E;--field:#0F1950;--ink:#FFEDE2;--mut:#E8BBA6;--line:#2F418C;--bd:#4A66D6;--gold:#E3C16F}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100vh;background:var(--grad) fixed;background-color:var(--bg);background-size:300% 300%;animation:drift 10s ease-in-out infinite;color:var(--ink);font:16px/1.5 'Bricolage Grotesque',system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;max-width:680px;margin:0 auto;padding:16px;color:#fff}
+h1{margin:0;font:400 30px/1.1 'Fraunces',Georgia,serif;letter-spacing:.6px}
+h2{margin:0 0 14px;font:400 22px/1.2 'Fraunces',Georgia,serif;letter-spacing:.2px}
+main{max-width:680px;margin:0 auto;padding:0 16px 40px}
+.card{background:var(--card);border:2px solid var(--bd);outline:1px solid var(--gold);outline-offset:-6px;border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 8px 26px rgba(3,8,50,.30)}
+.hero{position:relative;isolation:isolate;margin:36px 6px;padding:30px 24px 26px;background:none;border:none;outline:none;box-shadow:none;border-radius:0;text-align:center;color:var(--ct);--ca:#fff;--cb:#D9E8FF;--ct:#14307F;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.hero.clear{text-shadow:0 1px 6px rgba(255,255,255,.7)}
+.hero::before{content:"";position:absolute;inset:-22px -14px;z-index:-1;pointer-events:none;filter:blur(2px);animation:cloudbr 10s ease-in-out infinite;background:radial-gradient(ellipse 27% 38% at 15% 60%,var(--ca) 40%,transparent 100%),radial-gradient(ellipse 28% 42% at 32% 34%,var(--cb) 40%,transparent 100%),radial-gradient(ellipse 30% 46% at 54% 28%,var(--ca) 40%,transparent 100%),radial-gradient(ellipse 28% 42% at 76% 36%,var(--cb) 40%,transparent 100%),radial-gradient(ellipse 26% 38% at 88% 62%,var(--ca) 40%,transparent 100%),radial-gradient(ellipse 44% 36% at 50% 74%,var(--ca) 45%,transparent 100%),radial-gradient(ellipse 30% 30% at 28% 84%,var(--cb) 40%,transparent 100%),radial-gradient(ellipse 30% 30% at 72% 84%,var(--cb) 40%,transparent 100%)}
+@keyframes cloudbr{0%,100%{transform:scale(.985)}45%{transform:scale(1.03)}}
+.hero.over::before{filter:blur(1.5px) saturate(1.15)}
+.big{font:400 clamp(48px,13vw,68px)/1 'Fraunces',Georgia,serif;margin:2px 0 4px}
+.big small{font-size:.4em;opacity:.85}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.btn{border:0;border-radius:999px;padding:9px 20px;font:inherit;font-size:15px;font-weight:500;letter-spacing:.3px;background:var(--c1);color:#fff;cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,.14)}
+.hero .btn{background:#fff;color:#C9402C;text-shadow:none}
+.hero.clear .btn{background:var(--c1);color:#fff}
+.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.hero .ghost,header .ghost{background:transparent;color:#fff;border-color:#ffffffaa}
+.hero.clear .ghost{background:transparent;color:#14307F;border-color:rgba(20,48,127,.4)}
+.hero.clear select{color:#14307F;background:rgba(255,255,255,.75);border-color:rgba(20,48,127,.35)}
+.hero.clear .rt{stroke:rgba(20,48,127,.16)}
+.hero.clear .rp{stroke:#E8A33A}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-weight:600;font-size:14px;color:var(--mut)}
+input,textarea{width:100%;padding:9px 12px;margin-top:4px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font:inherit}
+ #trig details{max-width:100%;overflow:hidden}
+#trig summary{word-break:break-word;overflow-wrap:anywhere;white-space:normal}
+#trig textarea{width:100%;max-width:100%;box-sizing:border-box;resize:vertical;overflow-wrap:anywhere;white-space:pre-wrap} 
+.stat{font:400 36px/1.1 'Fraunces',Georgia,serif;color:var(--c1)}
+.mut{color:var(--mut);font-size:14px}
+.chart{position:relative;height:240px}
+details{border-top:1.5px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600}
+textarea{margin-top:8px}
+.mis{display:flex;gap:8px;align-items:center;padding:6px 0;font-weight:500;font-size:15px;line-height:1.3;cursor:pointer;transition:color .25s}
+.mis input{width:18px;height:18px;flex:none;margin:0;accent-color:var(--c1)}
+#mis{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.mis:has(input:checked){color:var(--mut);text-decoration:line-through;text-decoration-color:var(--c2)}
+.mis input:checked{animation:pop .3s ease}
+@keyframes pop{50%{transform:scale(1.35)}}
+.orb{width:104px;height:104px;border-radius:50%;margin:6px auto;background:radial-gradient(circle at 35% 30%,#FFE19B,var(--c2) 55%,var(--c1));box-shadow:0 0 40px rgba(255,217,138,.55);transform:scale(.55)}
+.ph{text-align:center;font:400 22px/1.3 'Fraunces',Georgia,serif;min-height:30px}
+.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFD98A,var(--c2),var(--c1));transition:width .3s}
+#out{display:none;margin-top:10px}
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;margin:0}
+.dash dt{color:var(--mut);font-size:13px;letter-spacing:.2px}
+.dash dd{margin:2px 0 0;font:400 22px/1.2 'Fraunces',Georgia,serif}
+.tw{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mut);font-weight:500;border-bottom:1px solid var(--line);padding:6px 12px 8px 0;white-space:nowrap}
+td{padding:8px 12px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{white-space:nowrap}
+select{padding:8px 12px;border:1px solid #ffffff99;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:14px;max-width:100%}
+option{color:#24140F}
+details{border-radius:8px}
+.wind{position:relative;margin:26px 0;padding:34px 18px 28px;text-align:center;color:#fff}
+.wind>:not(svg){position:relative;z-index:1}
+.wind h2{color:#fff}
+.wsvg{position:absolute;left:50%;top:50%;width:min(118%,600px);height:auto;transform:translate(-50%,-50%);pointer-events:none;z-index:0}
+.wl{fill:none;stroke:url(#wg);stroke-width:3;stroke-linecap:round;stroke-dasharray:150 70;animation:flow 8s linear infinite}
+.wl.b{stroke-width:2.5;animation-duration:10s;animation-direction:reverse}
+.wl.c{stroke-width:2;animation-duration:12s}
+.wind.on .wl{animation-duration:3s}
+.wind.hold .wl{animation-play-state:paused}
+#stats{position:relative;overflow:hidden}
+.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+.conf i{position:absolute;top:-20px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(var(--r));opacity:.9}}
+.coin{position:absolute;top:-30px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF3C4,#E3C16F 55%,#B8892B);color:#7A5A12;font:700 12px/22px 'Bricolage Grotesque',sans-serif;text-align:center;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 2px 4px rgba(0,0,0,.25);animation:coin 1.6s ease-in forwards;pointer-events:none}
+@keyframes coin{0%{transform:translateY(0) rotateY(0);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),150px) rotateY(720deg);opacity:0}}
+.crv{position:fixed;inset:0;z-index:55;background:rgba(3,8,40,.74);display:flex;align-items:center;justify-content:center;padding:16px}
+.crv[hidden]{display:none}
+.crvbox{width:min(100%,420px);text-align:center;background:var(--card);border:2px solid var(--bd);outline:1px solid var(--gold);outline-offset:-6px;border-radius:18px;padding:26px 22px}
+.tm{font:400 64px/1 'Fraunces',Georgia,serif;margin:6px 0 10px}
+.crvorb{width:72px;height:72px;border-radius:50%;margin:14px auto;background:radial-gradient(circle at 35% 30%,#FFE19B,var(--c2) 55%,var(--c1));box-shadow:0 0 30px rgba(255,217,138,.5);animation:brth 10s ease-in-out infinite}
+@keyframes brth{0%,100%{transform:scale(.6)}40%{transform:scale(1)}}
+#money{cursor:pointer}
+.ringw{position:relative;width:138px;height:138px;margin:8px auto}
+.ring{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7}
+.rt{stroke:rgba(255,255,255,.28)}
+.rp{stroke:#FFE9A8;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset 1s linear}
+.rin{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.ringw .big{font-size:42px;margin:0}
+.rl{font-size:11.5px;margin-top:3px;opacity:.95;max-width:96px}
+.ringw.done .rp{animation:glow 2.2s ease-in-out infinite}
+@keyframes glow{50%{filter:drop-shadow(0 0 8px #FFF3C4)}}
+@keyframes flow{to{stroke-dashoffset:-440}}
+.et{font:400 20px/1.3 'Fraunces',Georgia,serif;margin:2px 0 4px}
+.enc p{margin:8px 0;line-height:1.65;font-size:15.5px}
+.act{border-left:3px solid var(--c3);padding:2px 0 2px 12px;margin:14px 0;font-weight:500}
+.nx{color:var(--mut);font-size:13px}
+.enc details{margin-top:12px;padding-top:12px}
+.old{margin:14px 0 0}
+.old b{font:400 17px/1.3 'Fraunces',Georgia,serif}
+select.f{width:100%;margin-top:4px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font:inherit}
+.bub{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(94vw,440px);max-height:75vh;overflow:auto;z-index:50;display:flex;gap:12px;align-items:flex-start;background:var(--card);border:2px solid var(--bd);outline:1px solid var(--gold);outline-offset:-6px;border-radius:18px;padding:14px 16px;box-shadow:0 14px 40px rgba(2,6,40,.55);animation:rise .35s ease}
+.bub[hidden]{display:none}
+.bt{min-width:0}
+.bt b{font:400 18px/1.3 'Fraunces',Georgia,serif}
+.bt p{margin:4px 0;line-height:1.55;font-size:15px}
+.mascot{flex:none;animation:bob 2.6s ease-in-out infinite}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+@keyframes rise{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+details.flash{animation:flash 1.8s ease}
+@keyframes drift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
+@keyframes shimmer{0%,100%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}}
+@keyframes flash{0%{background:rgba(255,217,138,.9)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){body,.hero,details.flash,.mis input:checked,.bub,.mascot,.eye,.wl,.crvorb,.coin,.ringw.done .rp,.hero::before{animation:none}.rp{transition:none}}
+#msg{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1A1A2E;color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
+#msg.on{opacity:1}
+</style>
+</head>
+<body>
+<header><h1>🔥 Respire 100%</h1><button class="btn ghost" id="theme" aria-label="Changer de thème">Clair / sombre</button></header>
+<main>
+
+<section class="card hero" id="today" hidden>
+  <div style="opacity:.9;font-size:14px" id="dayinfo"></div>
+  <div class="ringw" role="img" aria-label="Temps avant la prochaine cigarette"><svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="rt" cx="60" cy="60" r="52"/><circle class="rp" id="rp" cx="60" cy="60" r="52"/></svg><div class="rin"><div class="big"><span id="smoked">0</span><small> / <span id="allow">0</span></small></div><div class="rl" id="rl"></div></div></div>
+  <div>cigarettes aujourd'hui, limite du jour</div>
+  <div id="air" style="font-size:14px;margin-top:2px"></div>
+  <div id="next" style="margin-top:8px;font-weight:600"></div>
+  <div class="row"><select id="trsel" aria-label="Déclencheur de cette cigarette"></select><button class="btn" id="plus">🚬 J'ai fumé +1</button><button class="btn" id="crvbtn">🕯️ J'ai envie</button><button class="btn ghost" id="minus">−1</button></div>
+</section>
+
+<section class="card enc" id="enc" hidden>
+  <h2>💬 Ton encouragement</h2>
+  <div class="et" id="enct"></div>
+  <p id="encx"></p>
+  <div class="act" id="enca"></div>
+  <div class="nx" id="encn"></div>
+  <details><summary>📖 Relire mes encouragements</summary><div id="encl"></div></details>
+</section>
+
+<section class="card" id="phase" hidden>
+  <h2>🧭 Ma phase</h2>
+  <p id="phtxt" style="margin-top:0;line-height:1.6"></p>
+  <div class="row" style="justify-content:flex-start"><button class="btn" id="phgo"></button><button class="btn ghost" id="phback" hidden>↩ Revenir à l'observation</button></div>
+</section>
+
+<section class="card" id="stats" hidden>
+  <div class="g2">
+    <div><div class="stat" id="avoided">0</div><div class="mut">🌱 cigarettes évitées</div></div>
+    <div><div class="stat" id="money">0 $</div><div class="mut">💰 économisés</div></div>
+  </div>
+</section>
+
+<section class="card"><h2>📈 Tableau de bord</h2><dl class="dash" id="dash"></dl>
+  <p class="mut" id="dwhy" style="margin:14px 0 0"></p></section>
+
+<section class="card" id="chartbox" hidden>
+  <h2>📊 Consommation quotidienne (14 jours)</h2>
+  <div class="chart"><canvas id="chart" role="img" aria-label="Cigarettes évitées et fumées par jour"></canvas></div>
+</section>
+
+<section class="card">
+  <h2>📅 Statistiques journalières</h2>
+  <div class="row" style="justify-content:flex-start"><button class="btn" id="csv">📤 Exporter CSV</button><button class="btn ghost" id="share">💌 Partager mes progrès</button></div>
+  <textarea id="out" rows="6" readonly></textarea>
+  <div class="tw"><table id="tbl"></table></div>
+</section>
+
+<section class="card">
+  <h2>🎯 Déclencheurs</h2>
+  <p class="mut" style="margin-top:0">Touche un déclencheur pour voir ta réponse. Tu peux la réécrire à ta façon.</p>
+  <div id="trig"></div>
+  <div class="row" style="justify-content:flex-start"><input id="newtrig" placeholder="Ajouter un déclencheur" style="flex:1;min-width:160px;margin:0"><button class="btn" id="addtrig">➕ Ajouter</button></div>
+</section>
+
+<section class="card">
+  <h2>✅ Missions du jour</h2>
+  <div id="mis"></div>
+  <div class="bar"><i id="misbar"></i></div>
+  <div class="mut" id="mistxt"></div>
+</section>
+
+<section class="wind" id="breath">
+  <svg class="wsvg" viewBox="0 0 400 260" aria-hidden="true"><defs><linearGradient id="wg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+   <path class="wl" d="M-10 74C60 34 120 100 200 62S330 26 392 70C412 88 394 116 368 106"/>
+   <path class="wl b" d="M-10 200C70 168 130 232 210 196S338 168 396 204C414 222 396 246 370 236"/>
+   <path class="wl c" d="M20 132C60 108 96 150 134 122C148 112 140 94 124 100"/>
+   <path class="wl c" d="M270 140C310 112 350 156 392 128"/></svg>
+  <h2>🌬️ Respirer</h2>
+  <div class="orb" id="orb"></div>
+  <div class="ph" id="ph">Prêt ?</div>
+  <div class="row"><button class="btn" id="brbtn">🌬️ Commencer</button></div>
+</section>
+
+<section class="card">
+  <h2>🗓️ Mon plan</h2>
+  <div class="g2">
+    <div><label for="perDay">Cigarettes par jour</label><input id="perDay" type="number" min="1" max="100" inputmode="numeric"></div>
+    <div><label for="price">Prix du paquet ($)</label><input id="price" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div><label for="pack">Cigarettes par paquet</label><input id="pack" type="number" min="1" value="20" inputmode="numeric"></div>
+  </div>
+  <div style="margin-top:12px"><label for="remon">🔔 Petits rappels de soutien (quand la page est ouverte)</label><select class="f" id="remon"><option value="off">Désactivés</option><option value="iv">Selon mon intervalle (recommandé)</option><option value="fix">À intervalle fixe…</option></select><div id="remfix" style="display:none;margin-top:8px"><label for="remn">Toutes les (minutes)</label><input id="remn" type="number" min="5" max="720" inputmode="numeric"></div><p class="mut" id="remtxt"></p></div>
+  <p class="mut">Tu observes ton rythme aussi longtemps que tu veux. Quand tu es prêt, tu passes toi-même à la phase d'Arrêt (voir « Ma phase »).</p>
+  <details><summary>ℹ️ Comment l'intervalle est calculé</summary><p class="mut"><b>Observation :</b> tu notes tes cigarettes, sans limite ni pression. L'app apprend ton rythme (nombre par jour, temps entre deux cigarettes). Après 15 jours, elle te demande si tu veux continuer d'observer ou passer à l'arrêt.<br><b>Arrêt :</b> ta limite baisse chaque jour jusqu'à zéro à la date choisie, et ton intervalle s'allonge à partir de ton rythme réel des 7 derniers jours. Calmes (0 ou 1 craquage, dans ta limite) : +15 %. Quelques craquages : +10 %. Jours difficiles : +7 %. Exemples : +15 % d'1 h = +9 min, de 2 h = +18 min ; +10 % de 2 h = +12 min ; +7 % de 2 h = +8 min. Si 15 % font moins de 5 min (intervalle sous 33 min), on ajoute 5 min. Ces pourcentages sont un choix de départ, pas une règle scientifique : écoute aussi ton ressenti. L'intervalle ne dépasse jamais l'objectif du plan.</p></details>
+  <div class="row" style="justify-content:flex-start"><button class="btn" id="savecfg">💾 Enregistrer mon plan</button></div>
+</section>
+
+<section class="card">
+  <h2>🗂️ Sauvegarde</h2>
+  <p class="mut" style="margin-top:0">Tes données restent dans ce navigateur. Exporte-les pour les garder en sécurité ou les passer sur un autre appareil.</p>
+  <div class="row" style="justify-content:flex-start"><button class="btn" id="bkp">💾 Exporter mes données</button><button class="btn ghost" id="imp">📥 Importer mes données</button><input type="file" id="impf" accept=".json,application/json" hidden></div>
+  <p class="mut">L'import remplace les données actuelles.</p>
+</section>
+</main>
+<div class="crv" id="phm" hidden role="dialog" aria-label="Choisir la phase">
+  <div class="crvbox">
+    <h2 id="phh"></h2>
+    <p id="pht" style="line-height:1.6;margin-top:0"></p>
+    <div id="phd" hidden style="text-align:left;margin-bottom:8px"><label for="phq">Date du zéro cigarette</label><input id="phq" type="date"></div>
+    <div class="row"><button class="btn" id="pha"></button><button class="btn ghost" id="phb"></button><button class="btn ghost" id="phc" hidden>Me le redemander demain</button></div>
+  </div>
+</div>
+<div class="crv" id="crv" hidden role="dialog" aria-label="Minuteur d'envie">
+  <div class="crvbox">
+    <h2>🕯️ Tiens 10 minutes</h2>
+    <div class="tm" id="crvt">10:00</div>
+    <div class="bar"><i id="crvb"></i></div>
+    <div class="crvorb" aria-hidden="true"></div>
+    <p class="mut" style="margin:0">Inspire quand le cercle grandit, expire quand il rétrécit.</p>
+    <p id="crvx" style="min-height:48px;margin:12px 0 4px;font-weight:500"></p>
+    <div class="row"><button class="btn ghost" id="crvs">Arrêter</button></div>
+  </div>
+</div>
+<div class="bub" id="bub" role="status" aria-live="polite" hidden>
+  <div class="mascot"><svg viewBox="0 0 100 112" width="76" height="84" aria-hidden="true"><defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD98A"/><stop offset=".55" stop-color="#F5A03A"/><stop offset="1" stop-color="#E9533B"/></linearGradient></defs><path d="M50 4C57 22 84 38 84 68C84 92 68 108 50 108C32 108 16 92 16 68C16 48 30 38 37 20C41 29 45 34 50 36C54 26 51 14 50 4Z" fill="url(#fl)"/><ellipse cx="50" cy="86" rx="20" ry="15" fill="#FFE9B8" opacity=".55"/><ellipse class="eye" cx="40" cy="70" rx="4.2" ry="5" fill="#3A1A10"/><ellipse class="eye" cx="60" cy="70" rx="4.2" ry="5" fill="#3A1A10"/><circle cx="41.5" cy="68" r="1.4" fill="#fff"/><circle cx="61.5" cy="68" r="1.4" fill="#fff"/><circle cx="31" cy="80" r="5" fill="#FF8A7A" opacity=".55"/><circle cx="69" cy="80" r="5" fill="#FF8A7A" opacity=".55"/><path d="M40 82Q50 93 60 82" fill="none" stroke="#3A1A10" stroke-width="3.4" stroke-linecap="round"/></svg></div>
+  <div class="bt"><b id="bubt"></b><p id="bubx"></p><div id="bube"></div>
+   <div class="row" style="justify-content:flex-start;margin-top:8px"><button class="btn" id="bubb">🌬️ Respirer une minute</button><button class="btn ghost" id="bubc">Merci 🧡</button></div></div>
+</div>
+<div id="msg" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+var K='zero-braise-v1', $=function(s){return document.querySelector(s)}, S={}, chart=null, mem=null;
+var DEF=[
+ {n:'Café du matin',r:"Garde le geste, change l'objet : bois ton café dehors, tasse à deux mains. Si l'envie monte, attends 10 minutes."},
+ {n:'Après le repas',r:"Lève-toi tout de suite : brosse-toi les dents ou lave la vaisselle. L'envie passe en 5 minutes."},
+ {n:'Stress',r:"Trois grandes respirations : 4 secondes pour inspirer, 6 pour expirer. Puis un verre d'eau froide."},
+ {n:'Alcool et sorties',r:"Garde un verre ou une tranche de citron vert dans la main. Dis à un ami que tu réduis."},
+ {n:'Ennui',r:"Bouge 5 minutes : marche, étirements, appelle quelqu'un. Occupe tes mains."},
+ {n:'Pause au travail',r:"Fais le tour du pâté de maisons au lieu d'aller fumer. Emporte de la gomme à mâcher."}];
+var WK=[
+ {l:'Semaine 1 : observer',m:["Boire un grand verre d'eau","Noter mon déclencheur du jour","Marcher 10 minutes","Faire l'exercice de respiration"]},
+ {l:'Semaine 2 : espacer',m:["Retarder une cigarette de 10 minutes","Respecter l'intervalle conseillé une fois","Boire un grand verre d'eau","Faire l'exercice de respiration"]},
+ {l:'Semaine 3 : remplacer',m:["Appliquer ma réponse à un déclencheur","Retarder une cigarette de 15 minutes","Marcher 15 minutes","Faire l'exercice de respiration"]},
+ {l:'Semaine 4 et + : tenir',m:["Sauter une cigarette de mon choix","Dire à un proche où j'en suis","Marcher 20 minutes","Faire l'exercice de respiration"]}];
+var ZERO={l:'Jour zéro',m:["Rester à zéro cigarette toute la journée","Me récompenser avec mes économies","Marcher 20 minutes","Faire l'exercice de respiration"]};
+var DAILY=["Ranger cendriers et briquets hors de vue","Me brosser les dents après le repas","Écrire à quelqu'un pour lui dire où j'en suis","Boire un thé ou une tisane à la place","Faire 20 squats ou pompes","Changer mon trajet habituel","Écrire une raison de continuer"];
+function missions(){var n=1,z=false;if(S.cfg){n=Math.max(1,dd(S.cfg.start,dk())+1);z=S.cfg.phase==='arret'&&!!S.cfg.quit&&dk()>=S.cfg.quit}
+ var w=z?ZERO:WK[Math.min(3,Math.floor((n-1)/7))];missions.label=w.l;return w.m.concat([DAILY[n%7]])}
+
+function load(){try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){S=mem||{}}
+ S.log=S.log||{};S.ev=S.ev||{};S.m=S.m||{};S.cv=S.cv||{};if(S.rem===undefined)S.rem=-1;if(S.cfg&&!S.cfg.phase){S.cfg.phase='obs';S.cfg.quit=null;S.cfg.arretStart=null}S.tr=S.tr||DEF.slice()}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){mem=S}}
+function dk(d){return (d||new Date()).toLocaleDateString('en-CA')}
+function dd(a,b){return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/864e5)}
+function toast(t){var m=$('#msg');m.textContent=t;m.className='on';clearTimeout(toast.t);toast.t=setTimeout(function(){m.className=''},2600)}
+
+function allow(day){var c=S.cfg;if(c.phase!=='arret'||!c.quit||!c.arretStart||day<c.arretStart)return c.perDay;if(day>=c.quit)return 0;var tot=dd(c.arretStart,c.quit),k=dd(c.arretStart,day);return Math.max(0,Math.round(c.perDay*(1-(k+1)/(tot+1))))}
+function days(){
+  var a=[],c=S.cfg;
+
+  if(!c || !c.start) return a;
+
+  var t=dk(),n=dd(c.start,t);
+
+  for(var i=0;i<=n;i++){
+    var d=new Date(c.start+'T00:00');
+    d.setDate(d.getDate()+i);
+    a.push(dk(d));
+  }
+
+  return a;
+}
+function avoidedTotal(){var c=S.cfg,t=dk(),sum=0;days().forEach(function(d){var s=S.log[d]||0;
+ if(d===t){var h=new Date().getHours()+new Date().getMinutes()/60,f=Math.min(1,Math.max(0,(h-7)/16));sum+=Math.max(0,Math.round(c.perDay*f)-s)}
+ else sum+=Math.max(0,c.perDay-s)});return sum}
+
+function ico(n){var x=n.toLowerCase();return /caf/.test(x)?'☕':/repas/.test(x)?'🍽️':/stress/.test(x)?'😤':/alcool|sortie/.test(x)?'🥂':/ennui/.test(x)?'😴':/pause|travail/.test(x)?'💼':/sans/.test(x)?'💭':'🔸'}
+function mico(t){var x=t.toLowerCase();return /th[ée]|tisane/.test(x)?'🍵':/eau/.test(x)?'💧':/marcher/.test(x)?'🚶':/respiration/.test(x)?'🌬️':/retarder/.test(x)?'⏳':/intervalle/.test(x)?'⏱️':/noter|écrire/.test(x)?'✍️':/appliquer/.test(x)?'🎯':/sauter/.test(x)?'🏁':/proche/.test(x)?'💬':/récompens/.test(x)?'🎁':/zéro/.test(x)?'🏆':/ranger/.test(x)?'🧹':/brosser/.test(x)?'🪥':/squats/.test(x)?'💪':/trajet/.test(x)?'🧭':'✨'}
+function avoidedDay(d){var c=S.cfg,s=S.log[d]||0;
+ if(d===dk()){var h=new Date().getHours()+new Date().getMinutes()/60,f=Math.min(1,Math.max(0,(h-7)/16));return Math.max(0,Math.round(c.perDay*f)-s)}
+ return Math.max(0,c.perDay-s)}
+function trgText(d,raw){var c={};(S.ev[d]||[]).forEach(function(e){c[e.g]=(c[e.g]||0)+1});var k=Object.keys(c);
+ return k.length?k.map(function(x){return (raw?x:ico(x)+' '+esc(x))+(c[x]>1?' ×'+c[x]:'')}).join(', '):'—'}
+var ENC=[
+ {d:1,i:"🌅",t:"Le départ : observer sans te juger",x:"Tu as commencé, et c'est déjà le plus difficile. Pendant cette première semaine, ton seul travail est de regarder : quand, où, avec qui, pourquoi. Chaque cigarette notée devient une information, pas une faute. Tu n'as rien à prouver, seulement à apprendre comment ton habitude fonctionne.",a:"Note chaque cigarette avec son déclencheur, même quand ça te dérange."},
+ {d:3,i:"🌱",t:"Trois jours à te regarder en face",x:"La plupart des gens ne regardent jamais leur consommation en face ; toi, tu le fais depuis trois jours. Ce que tu vois, ce ne sont pas des échecs : ce sont des moments, des lieux, des émotions qui reviennent. Les fortes envies fonctionnent comme des vagues : elles montent, atteignent un sommet, puis redescendent, souvent en quelques minutes. Tu n'as pas à les combattre, seulement à les laisser passer.",a:"Ce soir, repère le déclencheur qui revient le plus souvent et dis-toi : « lui, je le connais »."},
+ {d:8,i:"🧭",t:"Une semaine : tu observes avec constance",x:"Tu as terminé ta première semaine d'observation. Tu connais mieux tes moments, tes lieux, tes déclencheurs. Rien ne presse : tu avances à ton rythme, et c'est toi qui décideras quand passer à l'arrêt. En attendant, chaque cigarette notée te donne de la clarté. Un jour plus difficile ne remet pas ta semaine en question.",a:"Quand l'envie arrive, attends 10 minutes avant de décider. Tu pourras toujours changer d'avis après."},
+ {d:15,i:"🔥",t:"Deux semaines : tu deviens quelqu'un qui tient",x:"Quinze jours, ce n'est plus de la chance, c'est une compétence que tu construis. Chaque fois que tu retardes une cigarette, tu entraînes la part de toi qui choisit au lieu de réagir. Si un craquage est arrivé, regarde-le avec curiosité plutôt qu'avec reproche : qu'est-ce qui s'est passé juste avant ? Cette information vaut de l'or. L'autocritique dure épuise ; la bienveillance aide à reprendre le fil.",a:"Choisis un craquage récent et écris ce qui l'a précédé. Ajoute-lui une réponse dans tes déclencheurs."},
+ {d:22,i:"🌿",t:"Trois semaines : les habitudes se réécrivent",x:"Les gestes automatiques (le café, la pause, la fin du repas) commencent à se desserrer, parce que tu les remplaces par autre chose. Le plus dur n'est bientôt plus de résister, c'est de ne plus y penser. Tu te vois peut-être différemment : tu n'es plus quelqu'un qui essaie d'arrêter, mais quelqu'un qui est en train de changer. Laisse cette nouvelle image s'installer.",a:"Offre-toi une récompense avec l'argent économisé, quelque chose que tu peux voir ou toucher."},
+ {d:30,i:"🏔️",t:"Un mois : regarde le chemin parcouru",x:"Un mois entier. Prends une minute pour regarder d'où tu viens : tes chiffres du premier jour, tes économies, des déclencheurs que tu savais à peine nommer. Une cigarette de moins n'est pas qu'un chiffre, c'est une preuve que tu peux te faire confiance. Les moments difficiles ne disparaissent pas d'un coup, mais tu as maintenant des réponses prêtes pour eux, et ça change tout.",a:"Écris un petit mot à ton toi du premier jour : ce que tu aimerais lui dire."},
+ {d:60,i:"🛡️",t:"Deux mois : méfie-toi du confort, pas de toi",x:"À ce stade, le piège ressemble à une pensée rassurante : « une seule, ça ne fera rien ». Les rechutes surviennent souvent quand on se sent à l'aise. Garde une vigilance douce : tu connais tes déclencheurs, tes réponses, tes alliés. Et si un écart arrive, il n'efface pas deux mois de travail. Il ne te ramène pas à zéro : c'est une information, et tu repars de là, avec tout ce que tu sais déjà.",a:"Relis tes raisons de départ et ajoutes-en une nouvelle."},
+ {d:120,i:"🌳",t:"Quatre mois : ta nouvelle normalité",x:"Quatre mois, c'est assez long pour que le quotidien ait changé de forme. Tu as appris à traverser le stress, l'ennui, les soirées, sans ton ancienne béquille. Ce que tu as bâti ne dépend plus d'une application : c'est dans tes réflexes, dans ta façon de te parler, dans ta confiance. Il y a là de quoi te féliciter, sincèrement, sans minimiser.",a:"Dis à quelqu'un de proche ce que ces quatre mois t'ont appris sur toi."},
+ {d:"z",i:"🏆",t:"Jour zéro : tu y es",x:"Aujourd'hui, ton plan atteint zéro cigarette. Ce n'est pas la ligne d'arrivée d'une course, c'est le début d'une vie où tu choisis. Des envies pourront revenir, parfois longtemps après : cela ne veut pas dire que tu as perdu tes acquis, seulement que ton cerveau se souvient. Tu sais maintenant quoi faire : respirer, attendre, remplacer, demander de l'aide. Si l'envie devient lourde ou si tu glisses, un pharmacien ou un professionnel de santé peut t'accompagner : demander de l'aide est une force.",a:"Célèbre aujourd'hui par quelque chose qui te ressemble, et note ce dont tu es le plus proche."}];
+function renderEnc(){if(!S.cfg)return;var c=S.cfg,t=dk(),n=dd(c.start,t)+1,z=c.phase==='arret'&&!!c.quit&&t>=c.quit;
+ var R=ENC.filter(function(m){return m.d==='z'?z:n>=m.d}),cur=R[R.length-1],k=t+'|'+cur.d+'|'+n;
+ if(renderEnc.k===k)return;renderEnc.k=k;
+ var ck=String(cur.d);
+ if(S.capSeen===undefined){S.capSeen=ck;save()}
+ else if(S.capSeen!==ck){S.capSeen=ck;save();celebrate();setTimeout(function(){showBub('cap',cur.i+' '+cur.t+'. Lis ton nouvel encouragement plus haut.')},600)}
+ $('#enct').textContent=cur.i+' '+cur.t;$('#encx').textContent=cur.x;$('#enca').textContent='💡 '+cur.a;
+ var cands=[];ENC.forEach(function(m){if(m.d!=='z'&&m.d>n)cands.push({l:'jour '+m.d,k:m.d-n})});
+ if(!z&&c.phase==='arret'&&c.quit)cands.push({l:'jour zéro',k:dd(t,c.quit)});cands.sort(function(a,b){return a.k-b.k});
+ $('#encn').textContent=cands.length?'Prochain cap : '+cands[0].l+' (dans '+cands[0].k+' jour'+(cands[0].k>1?'s':'')+')':'Tu as franchi tous les caps. Continue, un jour à la fois.';
+ $('#encl').innerHTML=R.slice().reverse().map(function(m){return '<div class="old"><b>'+m.i+' '+(m.d==='z'?'Jour zéro':'Jour '+m.d)+' · '+m.t+'</b><p>'+m.x+'</p></div>'}).join('')}
+var CR=[
+ "Une cigarette ne défait pas ton travail. Ce que tu as bâti jusqu'ici reste vrai. Respire, bois un verre d'eau, et reprends au prochain choix.",
+ "Les craquages font partie du chemin. Ce qui compte, c'est ce que tu fais maintenant : tu es là, tu l'as noté, tu continues.",
+ "Pas de reproche, juste de la curiosité : qu'est-ce qui s'est passé juste avant ? Tu as noté ton déclencheur, et c'est une information précieuse.",
+ "Un écart n'est pas une rechute. Tu ne repars pas de zéro, tu repars de tout ce que tu sais déjà sur toi.",
+ "Tu as le droit d'avoir des moments difficiles. Parle-toi comme tu parlerais à un ami qui traverse la même chose."];
+var RM=[
+ "Une envie dure souvent quelques minutes. Tu peux la laisser passer comme une vague.",
+ "Un verre d'eau, trois grandes respirations, et on voit ensuite ?",
+ "Tu avances à ton rythme, et c'est très bien comme ça.",
+ "Chaque cigarette retardée est une petite victoire. Tu en as déjà beaucoup.",
+ "Pense à ta raison de départ. Elle est toujours là.",
+ "Une petite marche de 5 minutes fait souvent perdre de sa force à l'envie.",
+ "Tu prends soin de toi, une pause à la fois.",
+ "Tu mérites un petit bravo pour aujourd'hui."];
+function pick(a,k){var i;do{i=Math.floor(Math.random()*a.length)}while(a.length>1&&i===pick[k]);pick[k]=i;return a[i]}
+function showBub(kind,g){var b=$('#bub'),c=S.cfg,t=dk(),txt,ttl,extra='';
+ if(kind==='craq'){ttl='Hé, ça va aller 💛';txt=pick(CR,'c');
+  var tr=S.tr.filter(function(x){return x.n===g})[0];
+  if(tr)extra='<div class="act">'+ico(tr.n)+' Ta réponse pour « '+esc(tr.n)+' » : '+esc(tr.r)+'</div>'}
+ else if(kind==='mis'){ttl='Bravo, missions terminées 🎉';txt="Tu as fait toutes tes missions du jour. Chaque petit geste compte, et tu viens d'en cumuler plusieurs."}
+ else if(kind==='cap'){ttl='Nouveau cap atteint 🎉';txt=g}
+ else if(kind==='tenu'){ttl='Tu as tenu 10 minutes 🎉';txt="Bravo ! Une envie baisse souvent après quelques minutes. Si elle est encore là, tu peux relancer 10 minutes : tu viens de prouver que tu en es capable."}
+ else if(kind==='mid'){ttl='Tu es à mi-chemin 💪';var iv2=ivMin(t),left=Math.max(1,Math.round(iv2-(Date.now()-S.last)/6e4));txt='Plus que '+fmtMin(left)+" avant la fin de ton intervalle. Respire, bois un verre d'eau : l'envie baisse souvent toute seule."}
+ else if(kind==='end'){ttl='Intervalle terminé 🎉';txt="Tu as tenu jusqu'ici ! Tu peux fumer si tu en as besoin, mais tu peux aussi attendre 10 minutes de plus. C'est toi qui choisis."}
+ else{ttl='Petit rappel 😊';txt=pick(RM,'r');if(c){var a=allow(t);if(a>0)txt+=" Aujourd'hui : "+(S.log[t]||0)+' sur '+a+'.'}}
+ $('#bubt').textContent=ttl;$('#bubx').textContent=txt;$('#bube').innerHTML=extra;$('#bubb').style.display=(kind==='craq'||kind==='end')?'':'none';
+ b.hidden=false;clearTimeout(showBub.h);if(kind!=='craq')showBub.h=setTimeout(function(){b.hidden=true},16000)}
+function setRemUI(){var m=S.rem===0?'off':S.rem===-1?'iv':'fix';$('#remon').value=m;$('#remfix').style.display=m==='fix'?'block':'none';if(m==='fix')$('#remn').value=S.rem;
+ $('#remtxt').textContent=m==='iv'?"Un rappel à mi-chemin de ton intervalle, et un autre quand il se termine, pour t'aider à attendre encore un peu.":m==='fix'?'Un rappel toutes les '+fmtMin(S.rem)+', entre 8 h et 22 h.':'Aucun rappel.'}
+function tickRem(){if(!S.cfg||!S.rem)return;var now=Date.now(),h=new Date().getHours(),t=dk();
+ if(h<8||h>=22||!$('#bub').hidden)return;
+ if(S.rem===-1){var a=allow(t);if(!a||!S.last)return;var iv=ivMin(t)*6e4,el=now-S.last;
+  if(S.remFor!==S.last){S.remFor=S.last;S.remDone=0}
+  if(S.remDone<1&&el>=iv/2){S.remDone=1;save();if(el<iv)showBub('mid');return}
+  if(S.remDone<2&&el>=iv){S.remDone=2;save();if(el<iv*1.4)showBub('end')}
+  return}
+ if(!S.lastRem){S.lastRem=now;save();return}
+ if(now-S.lastRem>=S.rem*6e4){S.lastRem=now;save();showBub('rem')}}
+function renderDash(){var c=S.cfg,t=dk(),ev=S.ev[t]||[],s=S.log[t]||0,nxt='Non défini',left='Non défini',cq=0,real='—',rec='—',pl='—',rhy='—',ad=null;
+ ev.forEach(function(e){if(e.cq)cq++});
+ if(ev.length>1)real=fmtMin(Math.max(1,Math.round((ev[ev.length-1].t-ev[ev.length-2].t)/6e4)));
+ if(c){var a=allow(t),iv=ivMin(t),dl=(c.phase==='arret'&&c.quit)?Math.max(0,dd(t,c.quit)):-1;left=dl<0?'Non défini':dl+' jour'+(dl>1?'s':'');rec=iv?fmtMin(iv):'—';pl=planIv(t)?fmtMin(planIv(t)):'—';ad=adapt(t);rhy=ad?fmtMin(ad.avg):'—';
+  if(a===0)nxt="Zéro aujourd'hui";else{var w=S.last?Math.ceil((S.last+iv*6e4-Date.now())/6e4):0;nxt=w>0?fmtMin(w):'Autorisé maintenant'}}
+ var rows=[['⏱️ Temps avant prochaine cigarette',nxt],["📆 Jours avant date d'arrêt",left],["🚬 Cigarettes fumées aujourd'hui",s],["💥 Craquages aujourd'hui",cq],['⏳ Intervalle actuel entre cigarettes',real],['🎯 Intervalle conseillé',rec],['📐 Objectif du plan (intervalle)',pl],['📊 Mon rythme réel (7 derniers jours)',rhy],["🕯️ Envies traversées aujourd'hui",(S.cv&&S.cv[t])||0],['🏅 Envies traversées au total',Object.keys(S.cv||{}).reduce(function(a,k){return a+S.cv[k]},0)]];
+ $('#dash').innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('');
+ $('#dwhy').textContent=c?(c.phase!=='arret'?"🧭 Phase d'observation : tu notes, tu apprends ton rythme, sans pression. L'intervalle s'adaptera quand tu passeras à l'arrêt.":ad?'🧭 '+ad.why+" Ton intervalle conseillé ne dépasse jamais l'objectif du plan.":"🧭 Pas encore assez de données : l'intervalle suit ton plan pour l'instant. Note tes cigarettes pendant au moins 2 jours pour qu'il s'adapte à ton rythme."):''}
+function renderTable(){if(!S.cfg){$('#tbl').innerHTML='<tr><td>Enregistre ton plan pour voir tes statistiques.</td></tr>';return}
+ var c=S.cfg,h='<tr><th>Date</th><th>Fumées</th><th>Évitées</th><th>Économisé ($)</th><th>Déclencheurs</th></tr>';
+ days().slice(-3).reverse().forEach(function(d){var e=avoidedDay(d);h+='<tr><td>'+d+'</td><td>'+(S.log[d]||0)+'</td><td>'+e+'</td><td>'+(e*c.price/c.pack).toFixed(2)+'</td><td>'+trgText(d)+'</td></tr>'});
+ $('#tbl').innerHTML=h}
+
+function render(){
+ renderDash();renderTable();renderEnc();
+var c=S.cfg, has=!!c;
+
+ ['#enc','#phase','#stats','#chartbox'].forEach(function(s){
+  $(s).hidden=!has;
+ });
+
+ $('#today').hidden=false;
+
+ if(has){
+  var t=dk(),n=dd(c.start,t)+1,a=allow(t),s=S.log[t]||0;
+
+  $('#smoked').textContent=s;
+  $('#allow').textContent=a;
+  $('#today').className='card hero'+(s>a?' over':'');
+
+  var left=c.quit?dd(t,c.quit):0;
+
+  $('#dayinfo').textContent='Jour '+n+(c.phase==='arret'?(left>0?" · phase d'arrêt · zéro dans "+left+' jour'+(left>1?'s':''):' · objectif zéro atteint'):" · phase d'observation");
+
+  var iv=ivMin(t),msg;
+
+  if(a===0){
+   msg='Objectif du jour : zéro cigarette.';
+  }else{
+   msg=(c.phase==='arret'?'Intervalle conseillé : ':'Ton intervalle habituel : ')+fmtMin(iv);
+
+   if(S.last){
+    var w=Math.ceil((S.last+iv*6e4-Date.now())/6e4);
+    msg+=w>0?' · prochaine dans '+fmtMin(w):' · prochaine possible maintenant';
+   }
+  }
+
+  $('#next').textContent=msg;
+  ringTick();
+  renderPhase();
+  paintHero(s,a);
+  $('#avoided').textContent=avoidedTotal();
+  $('#money').textContent=(avoidedTotal()*c.price/c.pack).toFixed(2)+' $';
+
+  if(!render.coin){
+   render.coin=1;
+   coins();
+  }
+
+  drawChart();
+ }else{
+  $('#dayinfo').textContent='Aucun plan enregistré';
+  $('#smoked').textContent='0';
+  $('#allow').textContent='—';
+  $('#rl').textContent='';
+  $('#air').textContent='🌤️ Air pur du jour : 100 %';
+  $('#next').textContent='Enregistre ton plan pour suivre tes cigarettes.';
+  $('#rp').style.strokeDashoffset='326.73';
+  $('#today').className='card hero clear';
+ }
+ }
+function renderLists(){
+ var c=S.cfg;if(c){$('#perDay').value=c.perDay;$('#price').value=c.price;$('#pack').value=c.pack}
+ var h='';S.tr.forEach(function(x,i){h+='<details><summary>'+ico(x.n)+' '+esc(x.n)+'</summary><textarea rows="3" data-i="'+i+'" aria-label="Réponse pour '+esc(x.n)+'">'+esc(x.r)+'</textarea></details>'});
+ $('#trig').innerHTML=h;
+ setRemUI();
+ var sel=$('#trsel'),cur=sel.value;sel.innerHTML='<option value="Sans déclencheur">💭 Sans déclencheur</option>'+S.tr.map(function(x){return '<option value="'+esc(x.n)+'">'+ico(x.n)+' '+esc(x.n)+'</option>'}).join('');if(cur)sel.value=cur;
+ var MIS=missions(),t2=dk(),done=S.m[t2]||[],m='';MIS.forEach(function(x,i){m+='<label class="mis"><input type="checkbox" data-m="'+i+'"'+(done.indexOf(i)>-1?' checked':'')+'> '+mico(x)+' '+x+'</label>'});
+ $('#mis').innerHTML=m;$('#misbar').style.width=done.length/MIS.length*100+'%';$('#mistxt').textContent=done.length+' mission'+(done.length>1?'s':'')+' sur '+MIS.length+' · '+missions.label;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function colors(){var cs=getComputedStyle(document.documentElement);return{ink:cs.getPropertyValue('--ink').trim(),c1:cs.getPropertyValue('--c1').trim(),c2:cs.getPropertyValue('--c2').trim(),line:cs.getPropertyValue('--line').trim()}}
+function drawChart(){
+ if(typeof Chart==='undefined')return;
+ if(!S.cfg || !S.cfg.start)return;
+
+ var ds=days().slice(-14),k=colors(),L=ds,A=ds.map(function(d){return S.log[d]||0}),B=ds.map(avoidedDay);
+ if(chart)chart.destroy();
+ chart=new Chart($('#chart'),{type:'line',data:{labels:L,datasets:[
+  {label:'Évitées',data:B,borderColor:'#E3A21A',backgroundColor:'rgba(246,207,114,.28)',borderWidth:3,tension:.35,pointRadius:4,pointBackgroundColor:'#E3A21A',fill:true},
+  {label:'Fumées',data:A,borderColor:k.c1,backgroundColor:'rgba(233,83,59,.16)',borderWidth:3,tension:.35,pointRadius:4,pointBackgroundColor:k.c1,fill:true}]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{ticks:{color:k.ink,maxRotation:60,autoSkip:true},grid:{display:false}},y:{beginAtZero:true,ticks:{color:k.ink,precision:0},grid:{color:k.line}}},plugins:{legend:{labels:{color:k.ink}}}}})}
+
+$('#savecfg').onclick=function(){var p=+$('#perDay').value,pr=+$('#price').value,pk=+$('#pack').value||20;
+ if(!p||pr<0){toast('Remplis le nombre de cigarettes par jour.');return}
+ var o=S.cfg||{};S.cfg={perDay:p,price:pr||0,pack:pk,start:o.start||dk(),quit:o.quit||null,phase:o.phase||'obs',arretStart:o.arretStart||null};save();render();toast('Plan enregistré')};
+$('#plus').onclick=function(){if(!S.cfg){toast("Enregistre d'abord ton plan.");return}
+ var t=dk(),now=Date.now(),a=allow(t),s=S.log[t]||0,iv=ivMin(t),soon=S.last&&iv&&now<S.last+iv*6e4,cq=S.cfg.phase==='arret'&&((a===0)||(s>=a)||!!soon),g=$('#trsel').value||'Sans déclencheur';
+ (S.ev[t]=S.ev[t]||[]).push({t:now,g:g,cq:cq});S.log[t]=s+1;S.last=now;save();render();if(cq)showBub('craq',g)};
+$('#minus').onclick=function(){var t=dk();if(!(S.log[t]>0))return;S.log[t]--;if(S.ev[t]&&S.ev[t].length)S.ev[t].pop();var e=S.ev[t];S.last=e&&e.length?e[e.length-1].t:null;save();render()};
+$('#bubc').onclick=function(){$('#bub').hidden=true};
+$('#bubb').onclick=function(){$('#bub').hidden=true;$('#orb').scrollIntoView({behavior:'smooth',block:'center'});if(!br)$('#brbtn').click()};
+$('#remon').onchange=function(){var v=this.value;S.rem=v==='off'?0:v==='iv'?-1:(S.rem>0?S.rem:60);S.lastRem=Date.now();save();setRemUI();toast(S.rem?'Rappels activés':'Rappels désactivés')};
+$('#remn').onchange=function(){var n=Math.round(+this.value);if(!(n>=5&&n<=720)){toast('Choisis entre 5 et 720 minutes.');this.value=S.rem>0?S.rem:60;return}S.rem=n;S.lastRem=Date.now();save();setRemUI()};
+$('#trsel').onchange=function(){var d=$('#trig').children[this.selectedIndex-1];if(!d)return;d.open=true;d.scrollIntoView({behavior:'smooth',block:'center'});d.classList.remove('flash');void d.offsetWidth;d.classList.add('flash')};
+$('#trig').addEventListener('input',function(e){var i=e.target.dataset.i;if(i!=null){S.tr[i].r=e.target.value;save()}});
+$('#addtrig').onclick=function(){var v=$('#newtrig').value.trim();if(!v)return;S.tr.push({n:v,r:'Écris ici ce que tu feras à la place.'});$('#newtrig').value='';save();renderLists()};
+$('#mis').addEventListener('change',function(e){var t=dk(),i=+e.target.dataset.m,a=S.m[t]||[];
+ a=e.target.checked?a.concat([i]):a.filter(function(x){return x!==i});S.m[t]=a;save();renderLists();if(e.target.checked&&a.length>=missions().length&&S.mc!==t){S.mc=t;save();celebrate();showBub('mis')}});
+$('#theme').onclick=function(){var cur=S.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');S.theme=cur==='dark'?'light':'dark';save();applyTheme();drawChart()};
+function applyTheme(){if(S.theme)document.documentElement.setAttribute('data-theme',S.theme)}
+
+/* Respiration */
+var br=null,RESP=[['Inspire',4,1],['Retiens',4,1],['Expire',6,.55]];
+$('#brbtn').onclick=function(){
+ if(br){clearTimeout(br);br=null;$('#breath').classList.remove('on','hold');$('#brbtn').textContent='🌬️ Commencer';$('#ph').textContent='Prêt ?';$('#orb').style.transform='';return}
+ $('#breath').classList.add('on');$('#brbtn').textContent='⏹️ Arrêter';var i=0;
+ (function step(){var p=RESP[i%3],o=$('#orb');$('#breath').classList.toggle('hold',p[0]==='Retiens');o.style.transition='transform '+(p[0]==='Retiens'?0.3:p[1])+'s ease-in-out';o.style.transform='scale('+p[2]+')';
+  $('#ph').textContent=p[0]+' · '+p[1]+' s';i++;br=setTimeout(step,p[1]*1000)})()};
+
+/* Export & partage */
+function csv(){var c=S.cfg,r=['date,fumees,evitees,economies,declencheurs'];days().forEach(function(d){var e=avoidedDay(d);r.push([d,S.log[d]||0,e,(e*c.price/c.pack).toFixed(2),'"'+trgText(d,1).replace(/"/g,'""')+'"'].join(','))});return r.join('\n')}
+$('#csv').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton plan.');return}
+ var data='\ufeff'+csv(),o=$('#out');
+ try{var dl=window.claude&&await window.claude.use('downloads');if(dl){await dl.save({filename:'zero-braise.csv',data:new Blob([data],{type:'text/csv'})});return}}catch(e){if(e&&e.code==='declined')return}
+ if(!window.claude){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='zero-braise.csv';document.body.appendChild(a);a.click();a.remove();return}
+ o.style.display='block';o.value=csv();o.select();toast('Copie ce texte dans un fichier .csv')};
+$('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton plan.');return}
+ var c=S.cfg,ds=days(),totalAvoided=0,totalMoney=0;
+ var rows=ds.map(function(d){
+  var e=avoidedDay(d),money=(e*c.price/c.pack).toFixed(2);
+  totalAvoided+=e;totalMoney+=e*c.price/c.pack;
+  return d+' · '+e+' évitées · '+money+' $';
+ });
+ var t='📈 Mes progrès — Respire 100%\n\n';
+ t+='Depuis le début : '+totalAvoided+' cigarettes évitées\n';
+ t+='Économies totales : '+totalMoney.toFixed(2)+' $\n\n';
+ t+='Derniers jours :\n'+rows.slice(-7).join('\n');
+ if(c.quit&&c.phase==='arret')t+='\n\nObjectif : zéro cigarette le '+c.quit+'.';
+ try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Résumé copié')}
+ catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
+
+function fmtMin(m){m=Math.round(m);if(m<60)return m+' min';var h=Math.floor(m/60),r=m%60;return h+' h'+(r?' '+('0'+r).slice(-2)+' min':'')}
+function planIv(t){var a=allow(t);return a>0?Math.round(960/a):0}
+function adapt(t){var gaps=[],cr=0,cnt=0,nd=0;
+ for(var k=1;k<=7;k++){var d=new Date(t+'T00:00');d.setDate(d.getDate()-k);var key=dk(d);
+  if(S.cfg&&key<S.cfg.start)continue;var ev=S.ev[key]||[];if(ev.length<2)continue;nd++;cnt+=S.log[key]||ev.length;
+  for(var i=1;i<ev.length;i++){var g=(ev[i].t-ev[i-1].t)/6e4;if(g>0&&g<960)gaps.push(g)}
+  ev.forEach(function(e){if(e.cq)cr++})}
+ if(nd<2||gaps.length<6)return null;
+ var avg=gaps.reduce(function(a,b){return a+b},0)/gaps.length,al=allow(t),cd=cr/nd,per=cnt/nd,step,why;
+ if(cd>=3||(al>0&&per>al*1.3)){step=avg*1.07;why="Les derniers jours ont été difficiles : on avance prudemment, d'environ 7 %."}
+ else if(cd>1||(al>0&&per>al*1.1)){step=avg*1.10;why="Quelques craquages récents : on allonge d'environ 10 %."}
+ else{step=Math.max(avg+5,avg*1.15);why="Tes derniers jours étaient calmes : on allonge d'environ 15 %."}
+ return{avg:Math.round(avg),iv:Math.round(step),why:why+(Math.round(step)>Math.round(avg)?' Ton rythme passerait de '+fmtMin(avg)+' à '+fmtMin(step)+'.':'')}}
+function ivMin(t){var base=planIv(t);if(!base)return 0;if(S.cfg.phase!=='arret')return base;var ad=adapt(t);return ad?Math.min(base,ad.iv):base}
+function addD(d,n){var x=new Date(d+'T00:00');x.setDate(x.getDate()+n);return dk(x)}
+function paintHero(s,a){var h=$('#today'),p=a>0?Math.max(0,1-s/a):(s===0?1:0),over=s>a,
+ sa=over?[134,96,90]:[104,93,90],sb=over?[83,48,44]:[64,55,53],aa=[255,255,255],ab=[217,232,255];
+ function mx(x,y){return 'rgb('+[0,1,2].map(function(i){return Math.round(x[i]+(y[i]-x[i])*p)}).join(',')+')'}
+ h.style.setProperty('--ca',mx(sa,aa));h.style.setProperty('--cb',mx(sb,ab));
+ var clear=p>=.35;h.classList.toggle('clear',clear);h.classList.toggle('over',over);
+ h.style.setProperty('--ct',clear?'#14307F':'#fff');
+ $('#air').textContent=(clear?'🌤️':'🌫️')+' Air pur du jour : '+Math.round(p*100)+' %'}
+function renderPhase(){var c=S.cfg;if(!c)return;var t=dk(),n=dd(c.start,t)+1;
+ if(c.phase==='arret'){var l=Math.max(0,dd(t,c.quit));
+  $('#phtxt').textContent="Phase d'arrêt depuis le "+c.arretStart+" : zéro cigarette le "+c.quit+(l>0?' (dans '+l+' jour'+(l>1?'s':'')+')':'')+". Ta limite baisse chaque jour et ton intervalle s'allonge selon ton rythme réel.";
+  $('#phgo').textContent='📅 Changer la date';$('#phback').hidden=false}
+ else{$('#phtxt').textContent='Tu observes ton rythme depuis '+n+' jour'+(n>1?'s':'')+". Aucune pression : tu notes tes cigarettes et tes déclencheurs. Tu décides quand passer à la phase d'Arrêt.";
+  $('#phgo').textContent="🚀 Passer à la phase d'Arrêt";$('#phback').hidden=true}}
+var PH={mode:'',from:''};
+function openPh(mode,from){PH.mode=mode;PH.from=from||'';var c=S.cfg,t=dk();
+ $('#phd').hidden=mode!=='date';$('#phc').hidden=mode!=='ask';
+ if(mode==='ask'){var n=dd(c.start,t)+1,tot=0;days().forEach(function(d){tot+=S.log[d]||0});var ad=adapt(t);
+  $('#phh').textContent="🌤️ "+n+" jours d'observation";
+  $('#pht').textContent='Tu as noté '+tot+' cigarette'+(tot>1?'s':'')+' en '+n+' jours, soit environ '+(tot/n).toFixed(1)+' par jour'+(ad?', avec en moyenne '+fmtMin(ad.avg)+' entre deux cigarettes':'')+". Veux-tu continuer à observer, ou passer à la phase d'Arrêt ? Tu pourras changer d'avis plus tard.";
+  $('#pha').textContent="🚀 Passer à la phase d'Arrêt";$('#phb').textContent="Continuer l'observation"}
+ else{$('#phh').textContent='📅 Ta date de zéro cigarette';
+  $('#pht').textContent="À partir d'aujourd'hui, ta limite baisse chaque jour jusqu'à zéro à cette date, et ton intervalle s'allonge selon ton rythme réel. Choisis une date réaliste : tu pourras la changer.";
+  $('#phq').min=addD(t,1);$('#phq').value=c.quit||addD(t,30);
+  $('#pha').textContent=c.phase==='arret'?'Enregistrer la date':"Commencer l'arrêt";$('#phb').textContent='Retour'}
+ $('#phm').hidden=false}
+function closePh(){$('#phm').hidden=true}
+function checkPhase(){var c=S.cfg;if(!c||c.phase!=='obs')return;if(!S.obsNext){S.obsNext=addD(c.start,14);save()}
+ if(dk()>=S.obsNext&&$('#phm').hidden&&$('#crv').hidden)openPh('ask')}
+$('#pha').onclick=function(){if(PH.mode==='ask'){openPh('date','ask');return}
+ var q=$('#phq').value,t=dk();if(!q||q<=t){toast('Choisis une date après aujourd\'hui.');return}
+ var c=S.cfg;if(c.phase!=='arret'){c.phase='arret';c.arretStart=t}c.quit=q;S.obsNext=undefined;save();closePh();renderEnc.k=null;render();toast("Phase d'arrêt enregistrée. Tu avances pas à pas.")};
+$('#phb').onclick=function(){if(PH.mode==='ask'){S.obsNext=addD(dk(),15);save();closePh();toast("On continue d'observer. Je te le redemanderai dans 15 jours.");return}
+ if(PH.from==='ask'){openPh('ask');return}closePh()};
+$('#phc').onclick=function(){S.obsNext=addD(dk(),1);save();closePh()};
+$('#phgo').onclick=function(){openPh('date','plan')};
+$('#phback').onclick=function(){var c=S.cfg;c.phase='obs';c.quit=null;c.arretStart=null;S.obsNext=addD(dk(),15);save();renderEnc.k=null;render();toast("Retour à l'observation.")};
+function ringTick(){if(!S.cfg)return;var t=dk(),a=allow(t),C=326.73,frac=1,txt='',w=$('.ringw');
+ if(a===0)txt="Zéro aujourd'hui";
+ else if(!S.last)txt='Autorisé';
+ else{var iv=ivMin(t)*6e4,el=Date.now()-S.last;frac=Math.min(1,Math.max(0,el/iv));
+  if(frac>=1)txt='Intervalle terminé';
+  else{var l=Math.ceil((iv-el)/1000);txt=fmtMin(Math.ceil(l/60))}}
+ $('#rp').style.strokeDashoffset=C*(1-frac);$('#rl').textContent=txt;w.classList.toggle('done',frac>=1);
+ w.setAttribute('aria-label','Temps avant la prochaine cigarette : '+txt)}
+var TIPS=["Respire lentement : 4 secondes pour inspirer, 6 pour expirer.","Bois un grand verre d'eau, par petites gorgées.","Dis-toi : « c'est une envie, ce n'est pas un ordre ».","Lève-toi et marche jusqu'à une autre pièce.","Relâche ta mâchoire et tes épaules, étire-toi.","Pense à ta raison de départ.","Observe l'envie comme une vague : elle monte, puis elle redescend.","Imagine ce que tu feras juste après ces 10 minutes.","Mâche une gomme, croque une carotte ou brosse-toi les dents.","Encore un peu : tu es presque au bout."];
+function celebrate(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ var cols=['#FFD98A','#E3C16F','#F5A03A','#FFF3C4','#C9A24A'],box=document.createElement('div');box.className='conf';
+ for(var i=0;i<70;i++){var p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%cols.length];
+  p.style.setProperty('--dx',(Math.random()*160-80)+'px');p.style.setProperty('--r',(Math.random()*720-360)+'deg');
+  p.style.animationDuration=(1.8+Math.random()*1.6)+'s';p.style.animationDelay=(Math.random()*.4)+'s';
+  p.style.width=(6+Math.random()*6)+'px';p.style.height=(8+Math.random()*8)+'px';box.appendChild(p)}
+ document.body.appendChild(box);setTimeout(function(){box.remove()},4200)}
+function coins(){if(!S.cfg)return;var v=avoidedTotal()*S.cfg.price/S.cfg.pack,el=$('#money'),box=$('#stats');
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches||v<=0)return;
+ var t0=performance.now();(function f(n){var k=Math.min(1,(n-t0)/1400);el.textContent=(v*(1-Math.pow(1-k,3))).toFixed(2)+' $';if(k<1)requestAnimationFrame(f)})(t0);
+ var N=Math.min(14,Math.max(5,Math.round(v/2)));
+ for(var i=0;i<N;i++){var c=document.createElement('b');c.className='coin';c.textContent='$';c.style.left=(52+Math.random()*40)+'%';c.style.animationDelay=(i*.09)+'s';c.style.setProperty('--dx',(Math.random()*30-15)+'px');box.appendChild(c);
+  setTimeout(function(x){x.remove()},2600,c)}}
+$('#money').parentNode.onclick=coins;
+function crvTick(){var left=S.crvEnd-Date.now();if(left<=0){crvDone();return}
+ var sec=Math.ceil(left/1000);$('#crvt').textContent=('0'+Math.floor(sec/60)).slice(-2)+':'+('0'+sec%60).slice(-2);
+ $('#crvb').style.width=((1-left/6e5)*100)+'%';$('#crvx').textContent=TIPS[Math.min(TIPS.length-1,Math.floor((6e5-left)/6e4))]}
+function crvStart(resume){if(!resume){S.crvEnd=Date.now()+6e5;save()}$('#crv').hidden=false;crvTick();clearInterval(crvStart.h);crvStart.h=setInterval(crvTick,1000)}
+function crvStop(){clearInterval(crvStart.h);S.crvEnd=null;save();$('#crv').hidden=true}
+function crvDone(){crvStop();var t=dk();S.cv[t]=(S.cv[t]||0)+1;save();celebrate();showBub('tenu');render()}
+$('#crvbtn').onclick=function(){crvStart(false)};
+$('#crvs').onclick=function(){crvStop();toast("Pas de souci. Chaque minute gagnée compte.")};
+async function dlFile(name,text,mime){var o=$('#out');
+ try{var dl=window.claude&&await window.claude.use('downloads');if(dl){await dl.save({filename:name,data:new Blob([text],{type:mime})});return}}catch(e){if(e&&e.code==='declined')return}
+ if(!window.claude){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:mime}));a.download=name;document.body.appendChild(a);a.click();a.remove();return}
+ o.style.display='block';o.value=text;o.select();o.scrollIntoView({behavior:'smooth',block:'center'});toast('Copie ce texte dans un fichier '+name)}
+function clean(o){var D=/^\d{4}-\d{2}-\d{2}$/,r={log:{},ev:{},m:{},tr:[],rem:(+o.rem===0||+o.rem===-1||(+o.rem>=5&&+o.rem<=720))?Math.round(+o.rem):-1,last:+o.last||null,lastRem:+o.lastRem||null};
+ if(o.theme==='dark'||o.theme==='light')r.theme=o.theme;
+ if(o.cfg&&D.test(o.cfg.start)){var ph=(o.cfg.phase==='arret'&&D.test(o.cfg.quit)&&D.test(o.cfg.arretStart))?'arret':'obs';r.cfg={perDay:+o.cfg.perDay||1,price:+o.cfg.price||0,pack:+o.cfg.pack||20,start:o.cfg.start,quit:ph==='arret'?o.cfg.quit:null,phase:ph,arretStart:ph==='arret'?o.cfg.arretStart:null}}
+ if(D.test(o.obsNext))r.obsNext=o.obsNext;
+ Object.keys(o.log||{}).forEach(function(k){if(D.test(k))r.log[k]=Math.max(0,Math.round(+o.log[k]||0))});
+ Object.keys(o.ev||{}).forEach(function(k){if(D.test(k)&&Array.isArray(o.ev[k]))r.ev[k]=o.ev[k].map(function(e){return{t:+e.t||0,g:String(e.g||'Sans déclencheur').slice(0,60),cq:!!e.cq}})});
+ Object.keys(o.m||{}).forEach(function(k){if(D.test(k)&&Array.isArray(o.m[k]))r.m[k]=o.m[k].map(Number).filter(function(x){return x>=0&&x<9})});
+ r.cv={};Object.keys(o.cv||{}).forEach(function(k){if(D.test(k))r.cv[k]=Math.max(0,Math.round(+o.cv[k]||0))});
+ r.tr=(Array.isArray(o.tr)?o.tr:[]).slice(0,40).map(function(x){return{n:String(x.n||'').slice(0,60),r:String(x.r||'').slice(0,600)}}).filter(function(x){return x.n});
+ if(!r.tr.length)r.tr=DEF.slice();return r}
 $('#bkp').onclick=function(){dlFile('zero-braise-sauvegarde.json',JSON.stringify(S,null,1),'application/json')};
+$('#imp').onclick=function(){$('#impf').click()};
+$('#impf').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();
+ rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||typeof o!=='object')throw 0;S=clean(o);save();applyTheme();renderEnc.k=null;render();renderLists();toast('Données importées')}catch(e){toast('Fichier non reconnu.')}};
+ rd.readAsText(f);this.value=''};
+
+load();applyTheme();
+if(!S.cfg){S.cfg=null}
+render();renderLists();checkPhase();if(S.crvEnd&&S.crvEnd>Date.now())crvStart(true);else if(S.crvEnd){S.crvEnd=null;save()}
+setInterval(ringTick,1000);setInterval(function(){tickRem();checkPhase();if(S.cfg)render()},60000);
+</script>
+</body>
+</html>
 $('#imp').onclick=function(){$('#impf').click()};
 $('#impf').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();
  rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||typeof o!=='object')throw 0;S=clean(o);save();applyTheme();renderEnc.k=null;render();renderLists();toast('Données importées')}catch(e){toast('Fichier non reconnu.')}};
