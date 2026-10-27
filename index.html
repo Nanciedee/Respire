@@ -375,7 +375,7 @@ function renderDash(){var c=S.cfg,t=dk(),ev=S.ev[t]||[],s=S.log[t]||0,nxt='Non d
  $('#dwhy').textContent=c?(c.phase!=='arret'?"🧭 Phase d'observation : tu notes, tu apprends ton rythme, sans pression. L'intervalle s'adaptera quand tu passeras à l'arrêt.":ad?'🧭 '+ad.why+" Ton intervalle conseillé ne dépasse jamais l'objectif du plan.":"🧭 Pas encore assez de données : l'intervalle suit ton plan pour l'instant. Note tes cigarettes pendant au moins 2 jours pour qu'il s'adapte à ton rythme."):''}
 function renderTable(){if(!S.cfg){$('#tbl').innerHTML='<tr><td>Enregistre ton plan pour voir tes statistiques.</td></tr>';return}
  var c=S.cfg,h='<tr><th>Date</th><th>Fumées</th><th>Évitées</th><th>Économisé ($)</th><th>Déclencheurs</th></tr>';
- days().slice().reverse().forEach(function(d){var e=avoidedDay(d);h+='<tr><td>'+d+'</td><td>'+(S.log[d]||0)+'</td><td>'+e+'</td><td>'+(e*c.price/c.pack).toFixed(2)+'</td><td>'+trgText(d)+'</td></tr>'});
+ days().slice(-3).reverse().forEach(function(d){var e=avoidedDay(d);h+='<tr><td>'+d+'</td><td>'+(S.log[d]||0)+'</td><td>'+e+'</td><td>'+(e*c.price/c.pack).toFixed(2)+'</td><td>'+trgText(d)+'</td></tr>'});
  $('#tbl').innerHTML=h}
 
 function render(){
