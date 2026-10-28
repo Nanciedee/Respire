@@ -1229,15 +1229,3 @@ setInterval(ringTick,1000);setInterval(function(){tickRem();checkPhase();if(S.cf
 </script>
 </body>
 </html>
-$('#imp').onclick=function(){$('#impf').click()};
-$('#impf').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();
- rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||typeof o!=='object')throw 0;S=clean(o);save();applyTheme();renderEnc.k=null;render();renderLists();toast('Données importées')}catch(e){toast('Fichier non reconnu.')}};
- rd.readAsText(f);this.value=''};
-
-load();applyTheme();
-if(!S.cfg){S.cfg=null}
-render();renderLists();checkPhase();if(S.crvEnd&&S.crvEnd>Date.now())crvStart(true);else if(S.crvEnd){S.crvEnd=null;save()}
-setInterval(ringTick,1000);setInterval(function(){tickRem();checkPhase();if(S.cfg)render()},60000);
-</script>
-</body>
-</html>
