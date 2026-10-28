@@ -593,7 +593,7 @@ function clean(o){var D=/^\d{4}-\d{2}-\d{2}$/,r={log:{},ev:{},m:{},tr:[],rem:(+o
  r.cv={};Object.keys(o.cv||{}).forEach(function(k){if(D.test(k))r.cv[k]=Math.max(0,Math.round(+o.cv[k]||0))});
  r.tr=(Array.isArray(o.tr)?o.tr:[]).slice(0,40).map(function(x){return{n:String(x.n||'').slice(0,60),r:String(x.r||'').slice(0,600)}}).filter(function(x){return x.n});
  if(!r.tr.length)r.tr=DEF.slice();return r}
-<!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="utf-8">
