@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1B66">
+<meta name="description" content="Respire 100% : réduis puis arrête de fumer, pas à pas.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Respire 100%">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Respire 100%</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700&family=Fraunces:opsz,wght@9..144,400;600&display=swap" rel="stylesheet">
@@ -311,7 +319,7 @@ details.flash{animation:flash 1.8s ease}
 </div>
 <div id="msg" role="status"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="chart.umd.js"></script>
 <script>
 var K='zero-braise-v1', $=function(s){return document.querySelector(s)}, S={}, chart=null, mem=null;var showAllStats=false;
 var DEF=[
@@ -797,6 +805,9 @@ load();applyTheme();
 if(!S.cfg){S.cfg=null}
 render();renderLists();checkPhase();if(S.crvEnd&&S.crvEnd>Date.now())crvStart(true);else if(S.crvEnd){S.crvEnd=null;save()}
 setInterval(ringTick,1000);setInterval(function(){tickRem();checkPhase();if(S.cfg)render()},60000);
+</script>
+<script>
+if('serviceWorker' in navigator&&!window.claude&&/^https?:$/.test(location.protocol)){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
 </script>
 </body>
 </html>
