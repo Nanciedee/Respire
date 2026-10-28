@@ -594,7 +594,7 @@ function clean(o){var D=/^\d{4}-\d{2}-\d{2}$/,r={log:{},ev:{},m:{},tr:[],rem:(+o
  r.tr=(Array.isArray(o.tr)?o.tr:[]).slice(0,40).map(function(x){return{n:String(x.n||'').slice(0,60),r:String(x.r||'').slice(0,600)}}).filter(function(x){return x.n});
  if(!r.tr.length)r.tr=DEF.slice();return r}
 
-<style>
+</style>
 :root{--bg:#0E1B66;--grad:linear-gradient(135deg,#050C3A 0%,#0E1B66 35%,#172B8E 65%,#08114A 100%);--card:#FBF1E6;--field:#FFF9F3;--ink:#24140F;--mut:#7A5546;--c1:#E9533B;--c2:#F5A03A;--c3:#FFD98A;--line:#E9D3BC;--bd:#0E1B66;--gold:#C9A24A}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050B30;--grad:linear-gradient(135deg,#02061F 0%,#060C33 35%,#0B1650 65%,#030822 100%);--card:#141F5E;--field:#0F1950;--ink:#FFEDE2;--mut:#E8BBA6;--line:#2F418C;--bd:#4A66D6;--gold:#E3C16F}}
 :root[data-theme="dark"]{--bg:#050B30;--grad:linear-gradient(135deg,#02061F 0%,#060C33 35%,#0B1650 65%,#030822 100%);--card:#141F5E;--field:#0F1950;--ink:#FFEDE2;--mut:#E8BBA6;--line:#2F418C;--bd:#4A66D6;--gold:#E3C16F}
