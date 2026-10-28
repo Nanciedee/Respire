@@ -1216,7 +1216,71 @@ function clean(o){var D=/^\d{4}-\d{2}-\d{2}$/,r={log:{},ev:{},m:{},tr:[],rem:(+o
  r.cv={};Object.keys(o.cv||{}).forEach(function(k){if(D.test(k))r.cv[k]=Math.max(0,Math.round(+o.cv[k]||0))});
  r.tr=(Array.isArray(o.tr)?o.tr:[]).slice(0,40).map(function(x){return{n:String(x.n||'').slice(0,60),r:String(x.r||'').slice(0,600)}}).filter(function(x){return x.n});
  if(!r.tr.length)r.tr=DEF.slice();return r}
-$('#bkp').onclick=function(){dlFile('zero-braise-sauvegarde.json',JSON.stringify(S,null,1),'application/json')};
+function buildReport(){
+ var c=S.cfg,days=Object.keys(S.log||{}).sort();
+ var cigarettes=0,avoided=0,money=0,cravings=0;
+ days.forEach(function(d){
+  cigarettes+=S.log[d]||0;
+  avoided+=avoidedDay(d);
+  cravings+=S.cv[d]||0;
+ });
+ money=avoided*(c?c.price:0)/(c?c.pack:20);
+
+ var trigUse={},trigCravings={};
+ Object.keys(S.ev||{}).forEach(function(d){
+  (S.ev[d]||[]).forEach(function(e){
+   trigUse[e.g]=(trigUse[e.g]||0)+1;
+   if(e.cq)trigCravings[e.g]=(trigCravings[e.g]||0)+1;
+  });
+ });
+
+ var triggers=(S.tr||[]).map(function(x){
+  var use=trigUse[x.n]||0,crv=trigCravings[x.n]||0;
+  return{
+   nom:x.n,
+   reponse:x.r,
+   fois_utilise:use,
+   craquages_associes:crv,
+   fois_sans_craquage:Math.max(0,use-crv)
+  };
+ }).sort(function(a,b){return b.fois_utilise-a.fois_utilise});
+
+ var missionUse={};
+ Object.keys(S.m||{}).forEach(function(d){
+  (S.m[d]||[]).forEach(function(i){
+   missionUse[i]=(missionUse[i]||0)+1;
+  });
+ });
+ var missionsList=missions().map(function(label,i){
+  return{
+   mission:label,
+   jours_complete:missionUse[i]||0
+  };
+ }).sort(function(a,b){return b.jours_complete-a.jours_complete});
+
+ return{
+  genere_le:dk(),
+  plan:c||null,
+  tableau_de_bord:{
+   jours_suivis:days.length,
+   cigarettes_notees:cigarettes,
+   cigarettes_evitees:avoided,
+   economies_estimees:Number(money.toFixed(2)),
+   envies_traversees:cravings,
+   phase:c?c.phase:null,
+   date_debut:c?c.start:null,
+   date_objectif_zero:c&&c.phase==='arret'?c.quit:null
+  },
+  declencheurs:triggers,
+  missions_les_plus_utilisees:missionsList.slice(0,5),
+  missions_detail:missionsList
+ };
+}
+
+$('#bkp').onclick=function(){
+ var exportData=Object.assign({},S,{rapport:buildReport()});
+ dlFile('zero-braise-sauvegarde.json',JSON.stringify(exportData,null,1),'application/json')
+};
 $('#imp').onclick=function(){$('#impf').click()};
 $('#impf').onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();
  rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||typeof o!=='object')throw 0;S=clean(o);save();applyTheme();renderEnc.k=null;render();renderLists();toast('Données importées')}catch(e){toast('Fichier non reconnu.')}};
