@@ -496,9 +496,22 @@ $('#csv').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton pla
  try{var dl=window.claude&&await window.claude.use('downloads');if(dl){await dl.save({filename:'zero-braise.csv',data:new Blob([data],{type:'text/csv'})});return}}catch(e){if(e&&e.code==='declined')return}
  if(!window.claude){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='zero-braise.csv';document.body.appendChild(a);a.click();a.remove();return}
  o.style.display='block';o.value=csv();o.select();toast('Copie ce texte dans un fichier .csv')};
+ 
+ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton plan.');return}
+ var c=S.cfg,ds=days(),totalAvoided=0,totalMoney=0;
+ var rows=ds.map(function(d){
+  var e=avoidedDay(d),money=(e*c.price/c.pack).toFixed(2);
+  totalAvoided+=e;totalMoney+=e*c.price/c.pack;
+  return d+' · '+e+' évitées · '+money+' $';
+ });
+                                      
+ var t='📈 Mes progrès — Respire 100%\n\n';
+ t+='Depuis le début : '+totalAvoided+' cigarettes évitées\n';
+ t+='Économies totales : '+totalMoney.toFixed(2)+' $\n\n';
+ t+='Derniers jours :\n'+rows.slice(-7).join('\n');
+ if(c.quit&&c.phase==='arret')t+='\n\nObjectif : zéro cigarette le '+c.quit+'.';
  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Résumé copié')}
  catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
-
 function fmtMin(m){m=Math.round(m);if(m<60)return m+' min';var h=Math.floor(m/60),r=m%60;return h+' h'+(r?' '+('0'+r).slice(-2)+' min':'')}
 function planIv(t){var a=allow(t);return a>0?Math.round(960/a):0}
 function adapt(t){var gaps=[],cr=0,cnt=0,nd=0;
