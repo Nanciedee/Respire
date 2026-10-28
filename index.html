@@ -510,10 +510,15 @@ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton p
  var diff=now7-before7;
 
  var analyse='';
- if(prev7.length&&last7.length){
+ if(rows.length>=8)
   if(diff>0)analyse='Sur les 7 derniers jours -test, tu as évité '+now7+' cigarettes, soit '+diff+' de plus que la semaine précédente.';
   else if(diff<0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+Math.abs(diff)+' de moins que la semaine précédente. Cela reste une information, pas un jugement.';
   else analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, autant que la semaine précédente.';
+ }else{
+   analyse='Sur tes 7 derniers jours, tu as évité '+now7+' cigarettes.';
+  }
+ }else{
+  analyse='Tu suis tes progrès depuis '+rows.length+' jour'+(rows.length>1?'s':'')+'. Chaque jour noté rend ton portrait plus clair.';
  }
 
  var best=rows.slice().sort(function(a,b){return b.evitees-a.evitees})[0];
