@@ -497,17 +497,50 @@ $('#csv').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton pla
  if(!window.claude){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='zero-braise.csv';document.body.appendChild(a);a.click();a.remove();return}
  o.style.display='block';o.value=csv();o.select();toast('Copie ce texte dans un fichier .csv')};
 $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton plan.');return}
- var c=S.cfg,ds=days(),totalAvoided=0,totalMoney=0;
+ var c=S.cfg,t=dk(),ds=days(),totalAvoided=0,totalMoney=0;
  var rows=ds.map(function(d){
-  var e=avoidedDay(d),money=(e*c.price/c.pack).toFixed(2);
-  totalAvoided+=e;totalMoney+=e*c.price/c.pack;
-  return d+' · '+e+' évitées · '+money+' $';
+  var e=avoidedDay(d),money=e*c.price/c.pack;
+  totalAvoided+=e;totalMoney+=money;
+  return{date:d,evitees:e,economies:money};
  });
+
+ var last7=rows.slice(-7),prev7=rows.slice(-14,-7);
+ var sum=function(a){return a.reduce(function(x,r){return x+r.evitees},0)};
+ var now7=sum(last7),before7=sum(prev7);
+ var diff=now7-before7;
+
+ var analyse='';
+ if(prev7.length&&last7.length){
+  if(diff>0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+diff+' de plus que la semaine précédente.';
+  else if(diff<0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+Math.abs(diff)+' de moins que la semaine précédente. Cela reste une information, pas un jugement.';
+  else analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, autant que la semaine précédente.';
+ }
+
+ var best=rows.slice().sort(function(a,b){return b.evitees-a.evitees})[0];
+ if(best&&best.evitees>0)analyse+=' Ton meilleur jour : '+best.date+', avec '+best.evitees+' cigarettes évitées.';
+
+ var trigUse={};
+ Object.keys(S.ev||{}).forEach(function(d){
+  (S.ev[d]||[]).forEach(function(e){trigUse[e.g]=(trigUse[e.g]||0)+1});
+ });
+ var topTrig=Object.keys(trigUse).sort(function(a,b){return trigUse[b]-trigUse[a]})[0];
+ if(topTrig&&topTrig!=='Sans déclencheur')analyse+=' Ton déclencheur le plus souvent noté est « '+topTrig+' ».';
+
+ var cravings=Object.keys(S.cv||{}).reduce(function(a,k){return a+S.cv[k]},0);
+ if(cravings>0)analyse+=' Tu as traversé '+cravings+' envie'+(cravings>1?'s':'')+' sans fumer.';
+
+ analyse+=' Chaque jour noté t’aide à mieux comprendre ton rythme.';
+
  var t='📈 Mes progrès — Respire 100%\n\n';
  t+='Depuis le début : '+totalAvoided+' cigarettes évitées\n';
  t+='Économies totales : '+totalMoney.toFixed(2)+' $\n\n';
- t+='Derniers jours :\n'+rows.slice(-7).join('\n');
+ t+=analyse+'\n\n';
+ t+='Derniers jours :\n'+rows.slice(-7).map(function(r){
+  return r.date+' · '+r.evitees+' évitées · '+r.economies.toFixed(2)+' $';
+ }).join('\n');
+
  if(c.quit&&c.phase==='arret')t+='\n\nObjectif : zéro cigarette le '+c.quit+'.';
+
  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Résumé copié')}
  catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
 
