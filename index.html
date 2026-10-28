@@ -851,7 +851,7 @@ details.flash{animation:flash 1.8s ease}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-var K='zero-braise-v1', $=function(s){return document.querySelector(s)}, S={}, chart=null, mem=null;
+var K='zero-braise-v1', $=function(s){return document.querySelector(s)}, S={}, chart=null, mem=null;var showAllStats=false;
 var DEF=[
  {n:'Café du matin',r:"Garde le geste, change l'objet : bois ton café dehors, tasse à deux mains. Si l'envie monte, attends 10 minutes."},
  {n:'Après le repas',r:"Lève-toi tout de suite : brosse-toi les dents ou lave la vaisselle. L'envie passe en 5 minutes."},
@@ -1165,6 +1165,12 @@ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton p
 
  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Résumé copié')}
  catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
+ 
+ $('#more').onclick=function(){
+ showAllStats=!showAllStats;
+ this.textContent=showAllStats?'👁️ Voir moins':'👁️ Voir plus';
+ renderTable();
+};
 
 function fmtMin(m){m=Math.round(m);if(m<60)return m+' min';var h=Math.floor(m/60),r=m%60;return h+' h'+(r?' '+('0'+r).slice(-2)+' min':'')}
 function planIv(t){var a=allow(t);return a>0?Math.round(960/a):0}
