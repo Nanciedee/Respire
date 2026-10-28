@@ -1104,34 +1104,40 @@ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton p
  var now7=sum(last7),before7=sum(prev7);
  var diff=now7-before7;
 
- var analyse='';
+ var analyse=[];
 
  if(rows.length>=8){
   if(prev7.length){
-   if(diff>0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+diff+' de plus que la semaine précédente.';
-   else if(diff<0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+Math.abs(diff)+' de moins que la semaine précédente. Cela reste une information, pas un jugement.';
-   else analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, autant que la semaine précédente.';
+   if(diff>0)analyse.push('📈 Sur les 7 derniers jours, tu as évité '+now7+' cigarettes.');
+   if(diff>0)analyse.push('🌱 Soit '+diff+' de plus que la semaine précédente.');
+   if(diff<0)analyse.push('📈 Sur les 7 derniers jours, tu as évité '+now7+' cigarettes.');
+   if(diff<0)analyse.push('🌿 Soit '+Math.abs(diff)+' de moins que la semaine précédente. Cela reste une information, pas un jugement.');
+   if(diff===0)analyse.push('📈 Sur les 7 derniers jours, tu as évité '+now7+' cigarettes.');
+   if(diff===0)analyse.push('⚖️ Autant que la semaine précédente.');
   }else{
-   analyse='Sur tes 7 derniers jours, tu as évité '+now7+' cigarettes.';
+   analyse.push('📈 Sur tes 7 derniers jours, tu as évité '+now7+' cigarettes.');
   }
  }else{
-  analyse='Tu suis tes progrès depuis '+rows.length+' jour'+(rows.length>1?'s':'')+'. Chaque jour noté rend ton portrait plus clair.';
+  analyse.push('🌱 Tu suis tes progrès depuis '+rows.length+' jour'+(rows.length>1?'s':'')+'.');
+  analyse.push('📝 Chaque jour noté rend ton portrait plus clair.');
  }
 
  var best=rows.slice().sort(function(a,b){return b.evitees-a.evitees})[0];
- if(best&&best.evitees>0)analyse+=' Ton meilleur jour : '+best.date+', avec '+best.evitees+' cigarettes évitées.';
+ if(best&&best.evitees>0)analyse.push('🏅 Ton meilleur jour : '+best.date+', avec '+best.evitees+' cigarettes évitées.');
 
  var trigUse={};
  Object.keys(S.ev||{}).forEach(function(d){
   (S.ev[d]||[]).forEach(function(e){trigUse[e.g]=(trigUse[e.g]||0)+1});
  });
  var topTrig=Object.keys(trigUse).sort(function(a,b){return trigUse[b]-trigUse[a]})[0];
- if(topTrig&&topTrig!=='Sans déclencheur')analyse+=' Ton déclencheur le plus souvent noté est « '+topTrig+' ».';
+ if(topTrig&&topTrig!=='Sans déclencheur')analyse.push('🔍 Ton déclencheur le plus souvent noté : « '+topTrig+' ».');
 
  var cravings=Object.keys(S.cv||{}).reduce(function(a,k){return a+S.cv[k]},0);
- if(cravings>0)analyse+=' Tu as traversé '+cravings+' envie'+(cravings>1?'s':'')+' sans fumer.';
+ if(cravings>0)analyse.push('🕯️ Tu as traversé '+cravings+' envie'+(cravings>1?'s':'')+' sans fumer.');
 
- analyse+=' Chaque jour noté t’aide à mieux comprendre ton rythme.';
+ analyse.push('🧡 Chaque jour noté t’aide à mieux comprendre ton rythme.');
+
+ analyse=analyse.join('\n');
 
  var t='🔥 RESPIRE 100 %\n';
  t+='📈 Mon bilan de progression\n';
