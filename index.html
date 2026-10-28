@@ -511,7 +511,7 @@ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton p
 
  var analyse='';
  if(prev7.length&&last7.length){
-  if(diff>0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+diff+' de plus que la semaine précédente.';
+  if(diff>0)analyse='Sur les 7 derniers jours -test, tu as évité '+now7+' cigarettes, soit '+diff+' de plus que la semaine précédente.';
   else if(diff<0)analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, soit '+Math.abs(diff)+' de moins que la semaine précédente. Cela reste une information, pas un jugement.';
   else analyse='Sur les 7 derniers jours, tu as évité '+now7+' cigarettes, autant que la semaine précédente.';
  }
