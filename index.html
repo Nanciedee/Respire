@@ -1133,15 +1133,29 @@ $('#share').onclick=async function(){if(!S.cfg){toast('Enregistre d\'abord ton p
 
  analyse+=' Chaque jour noté t’aide à mieux comprendre ton rythme.';
 
- var t='📈 Mes progrès — Respire 100%\n\n';
- t+='Depuis le début : '+totalAvoided+' cigarettes évitées\n';
- t+='Économies totales : '+totalMoney.toFixed(2)+' $\n\n';
- t+=analyse+'\n\n';
- t+='Derniers jours :\n'+rows.slice(-7).map(function(r){
-  return r.date+' · '+r.evitees+' évitées · '+r.economies.toFixed(2)+' $';
+ var t='🔥 RESPIRE 100 %\n';
+ t+='📈 Mon bilan de progression\n';
+ t+='━━━━━━━━━━━━━━━━━━━━\n\n';
+
+ t+='🌱 Cigarettes évitées : '+totalAvoided+'\n';
+ t+='💰 Économies réalisées : '+totalMoney.toFixed(2)+' $\n';
+
+ var cravings=Object.keys(S.cv||{}).reduce(function(a,k){return a+S.cv[k]},0);
+ if(cravings>0)t+='🕯️ Envies traversées : '+cravings+'\n';
+
+ t+='\n💡 '+analyse+'\n\n';
+
+ t+='🗓️ Mes 7 derniers jours\n';
+ t+='━━━━━━━━━━━━━━━━━━━━\n';
+ t+=rows.slice(-7).map(function(r){
+  return '📅 '+r.date+'\n   🌱 '+r.evitees+' évitées · 💰 '+r.economies.toFixed(2)+' $';
  }).join('\n');
 
- if(c.quit&&c.phase==='arret')t+='\n\nObjectif : zéro cigarette le '+c.quit+'.';
+ if(c.quit&&c.phase==='arret'){
+  t+='\n\n🎯 Objectif : zéro cigarette le '+c.quit+'.';
+ }
+
+ t+='\n\n🧡 Un jour à la fois, je continue.';
 
  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Résumé copié')}
  catch(e){if(e&&e.name==='AbortError')return;var o=$('#out');o.style.display='block';o.value=t;o.select()}};
